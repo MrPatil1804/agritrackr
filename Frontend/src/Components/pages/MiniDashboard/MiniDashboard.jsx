@@ -199,7 +199,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
     if (!ideal || !value) return '#4caf50';
     const deviation = Math.abs(((value - ideal) / ideal) * 100);
     if (deviation <= 10) return '#4caf50';
-    if (deviation <= 20) return '#ff9800';
+    if (deviation <= 20) return '#ffc400ff';
     return '#f44336';
   }
 
@@ -242,7 +242,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
   const nutrientData = [
     { name: 'N', value: parseFloat(avgNitrogen), color: '#4caf50' },
     { name: 'P', value: parseFloat(avgPhosphorus), color: '#2196f3' },
-    { name: 'K', value: parseFloat(avgPotassium), color: '#ff9800' },
+    { name: 'K', value: parseFloat(avgPotassium), color: '#ff7700ff' },
   ];
 
   const avgCalcium = getAverage('calcium');

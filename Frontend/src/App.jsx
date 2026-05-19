@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Console, Dashboard, Analytics, Report, Mould, Performance, Config, Login, TAC, RegisterCom, SoilDashboard } from './Components/pages';
 import Register from './Components/pages/login-reg/Register';
+import LandingPage from './Components/pages/LandingPage/LandingPage';
 import { useSelector } from 'react-redux';
 import Filters from './Components/pages/Filters';
 import MiniDashboard from './Components/pages/MiniDashboard/MiniDashboard';
@@ -53,9 +54,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/signup" element={<Register />} />
         <Route path="/tac" element={<TAC />} />
         {loginstate && (
           <Route

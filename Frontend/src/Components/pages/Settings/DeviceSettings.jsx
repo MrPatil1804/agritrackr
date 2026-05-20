@@ -21,6 +21,7 @@ import {
   IconButton
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const Container = styled.div`
   padding: 24px;
@@ -102,6 +103,7 @@ function DeviceSettings() {
   });
 
   const userData = useSelector((state) => state.auth.userData);
+  const { t } = useTranslation();
 
   // Fetch devices from backend
   useEffect(() => {
@@ -180,8 +182,12 @@ function DeviceSettings() {
     }
   };
 
+  const getModeLabel = (mode) => {
+    return mode === 'survey' ? t('device.surveyDevice') : t('device.fitAndForget');
+  };
+
   const handleDeleteDevice = async (deviceId) => {
-    if (window.confirm('Are you sure you want to delete this device?')) {
+    if (window.confirm(t('device.deleteConfirm'))) {
       try {
         console.log('Would delete device:', deviceId);
         // Mock delete - in real implementation, call API
@@ -196,14 +202,10 @@ function DeviceSettings() {
     return mode === 'survey' ? 'survey' : 'fit_and_forget';
   };
 
-  const getModeLabel = (mode) => {
-    return mode === 'survey' ? 'Survey Device' : 'Fit & Forget Device';
-  };
-
   if (loading) {
     return (
       <Container>
-        <Typography variant="h6">Loading devices...</Typography>
+        <Typography variant="h6">{t('device.loading')}</Typography>
       </Container>
     );
   }
@@ -211,23 +213,23 @@ function DeviceSettings() {
   return (
     <Container>
       <Header>
-        <Typography variant="h4">Device Settings</Typography>
+        <Typography variant="h4">{t('device.title')}</Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddDevice}
         >
-          Add Device
+          {t('device.addDevice')}
         </Button>
       </Header>
 
       {devices.length === 0 ? (
         <EmptyState>
           <Typography variant="h6" gutterBottom>
-            No devices found
+            {t('device.noDevicesFound')}
           </Typography>
           <Typography variant="body2" color="textSecondary">
-            Add your first device to get started with monitoring
+            {t('device.noDevicesHint')}
           </Typography>
         </EmptyState>
       ) : (
@@ -241,13 +243,13 @@ function DeviceSettings() {
                       {device.name}
                     </Typography>
                     <Typography variant="body2" color="textSecondary" gutterBottom>
-                      Device ID: {device.deviceId}
-                    </Typography>
-                    {device.location && (
-                      <Typography variant="body2" color="textSecondary" gutterBottom>
-                        Location: {device.location}
+                        {t('device.deviceIdLabel')}: {device.deviceId}
                       </Typography>
-                    )}
+                      {device.location && (
+                        <Typography variant="body2" color="textSecondary" gutterBottom>
+                          {t('device.locationLabel')}: {device.location}
+                        </Typography>
+                      )}
                     {device.description && (
                       <Typography variant="body2" color="textSecondary" gutterBottom>
                         {device.description}
@@ -294,13 +296,13 @@ function DeviceSettings() {
       {/* Add/Edit Device Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>
-          {editingDevice ? 'Edit Device' : 'Add New Device'}
+          {editingDevice ? t('device.editDevice') : t('device.addNewDevice')}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2 }}>
             <TextField
               fullWidth
-              label="Device Name"
+              label={t('device.deviceName')}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               margin="normal"
@@ -309,7 +311,7 @@ function DeviceSettings() {
 
             <TextField
               fullWidth
-              label="Device ID"
+              label={t('device.deviceId')}
               value={formData.deviceId}
               onChange={(e) => setFormData({ ...formData, deviceId: e.target.value })}
               margin="normal"
@@ -318,20 +320,20 @@ function DeviceSettings() {
             />
 
             <FormControl fullWidth margin="normal">
-              <InputLabel>Device Mode</InputLabel>
+              <InputLabel>{t('device.deviceMode')}</InputLabel>
               <Select
                 value={formData.mode}
                 onChange={(e) => setFormData({ ...formData, mode: e.target.value })}
-                label="Device Mode"
+                label={t('device.deviceMode')}
               >
-                <MenuItem value="survey">📊 Survey Device</MenuItem>
-                <MenuItem value="fit_and_forget">🤖 Fit & Forget Device</MenuItem>
+                <MenuItem value="survey">📊 {t('device.surveyDevice')}</MenuItem>
+                <MenuItem value="fit_and_forget">🤖 {t('device.fitAndForget')}</MenuItem>
               </Select>
             </FormControl>
 
             <TextField
               fullWidth
-              label="Location (Optional)"
+              label={t('device.location')}
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               margin="normal"
@@ -339,7 +341,7 @@ function DeviceSettings() {
 
             <TextField
               fullWidth
-              label="Description (Optional)"
+              label={t('device.description')}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               margin="normal"
@@ -349,13 +351,13 @@ function DeviceSettings() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button onClick={() => setOpenDialog(false)}>{t('device.cancel')}</Button>
           <Button
             onClick={handleSaveDevice}
             variant="contained"
             disabled={!formData.name || !formData.deviceId}
           >
-            {editingDevice ? 'Update' : 'Add'} Device
+            {editingDevice ? t('device.update') : t('device.add')} {t('device.title').split(' ')[0]}
           </Button>
         </DialogActions>
       </Dialog>

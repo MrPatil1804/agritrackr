@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const TopBar = styled(Box)`
   background-color: hsl(0deg 0% 95.29%);
@@ -429,6 +430,7 @@ const MetricChart = ({ data, metricKey, metricLabel, idealValue, unit = '%' }) =
 const Dashboard = ({ isOpen, toggle }) => {
     // Get dates from Redux store for filtering
     const dates = useSelector((state) => state.datePicker.dates);
+    const { t } = useTranslation();
     
     const [data, setData] = useState([]);
     const [ideals, setIdeals] = useState({});
@@ -602,28 +604,28 @@ const Dashboard = ({ isOpen, toggle }) => {
     }, [dates]); // Re-fetch when dates change
 
     const environmentalMetrics = [
-        { key: 'moisture', label: 'Soil Moisture', unit: '%' },
-        { key: 'pH', label: 'Soil pH', unit: '' },
-        { key: 'temperature', label: 'Soil Temperature', unit: '°C' }
+        { key: 'moisture', label: t('metric.soilMoisture'), unit: '%' },
+        { key: 'pH', label: t('metric.soilPh'), unit: '' },
+        { key: 'temperature', label: t('metric.soilTemperature'), unit: '°C' }
     ];
 
     const nutrients = [
-        { key: 'nitrogen', label: 'Nitrogen (N)', unit: 'ppm' },
-        { key: 'phosphorus', label: 'Phosphorus (P)', unit: 'ppm' },
-        { key: 'sulfur', label: 'Sulfur (S)', unit: 'ppm' },
-        { key: 'zinc', label: 'Zinc (Zn)', unit: 'ppm' },
-        { key: 'iron', label: 'Iron (Fe)', unit: 'ppm' },
-        { key: 'manganese', label: 'Manganese (Mn)', unit: 'ppm' },
-        { key: 'copper', label: 'Copper (Cu)', unit: 'ppm' },
-        { key: 'potassium', label: 'Potassium (K)', unit: 'ppm' },
-        { key: 'calcium', label: 'Calcium (Ca)', unit: 'ppm' },
-        { key: 'magnesium', label: 'Magnesium (Mg)', unit: 'ppm' }
+        { key: 'nitrogen', label: t('metric.nitrogen'), unit: 'ppm' },
+        { key: 'phosphorus', label: t('metric.phosphorus'), unit: 'ppm' },
+        { key: 'sulfur', label: t('metric.sulfur'), unit: 'ppm' },
+        { key: 'zinc', label: t('metric.zinc'), unit: 'ppm' },
+        { key: 'iron', label: t('metric.iron'), unit: 'ppm' },
+        { key: 'manganese', label: t('metric.manganese'), unit: 'ppm' },
+        { key: 'copper', label: t('metric.copper'), unit: 'ppm' },
+        { key: 'potassium', label: t('metric.potassium'), unit: 'ppm' },
+        { key: 'calcium', label: t('metric.calcium'), unit: 'ppm' },
+        { key: 'magnesium', label: t('metric.magnesium'), unit: 'ppm' }
     ];
 
     // Format date range for display in top bar
     const formatDateRange = () => {
         if (!dates || dates.length < 2) {
-            return "All Dates";
+            return t('home.allDates');
         }
         const startDate = new Date(dates[0]);
         const endDate = new Date(dates[1]);
@@ -638,7 +640,7 @@ const Dashboard = ({ isOpen, toggle }) => {
                 <Header isOpen={isOpen}>
                     <Navbar />
                 </Header>
-                <div style={{ padding: 40, textAlign: 'center', marginTop: 80 }}>Loading soil data...</div>
+                <div style={{ padding: 40, textAlign: 'center', marginTop: 80 }}>{t('dash.loadingSoilData')}</div>
             </GridContainer>
         );
     }
@@ -657,10 +659,10 @@ const Dashboard = ({ isOpen, toggle }) => {
                 <TopBar>
                     <NameAndDateSection>
                         <NameSection>
-                            <div className="value">Dashboard</div>
+                            <div className="value">{t('dash.title')}</div>
                         </NameSection>
                         <DateSection>
-                            <div className="label">Date Range</div>
+                            <div className="label">{t('home.dateRange')}</div>
                             <div className="date-range">{formatDateRange()}</div>
                         </DateSection>
                     </NameAndDateSection>
@@ -671,87 +673,57 @@ const Dashboard = ({ isOpen, toggle }) => {
 
                 {/* Summary Overview */}
                 <div style={{ marginBottom: 24 }}>
-                    <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Summary Overview</h2>
+                    <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>{t('dash.summaryOverview')}</h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
-                        <div style={{
-                            background: 'white',
-                            padding: 20,
-                            borderRadius: 12,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}>
-                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Soil Health Score</div>
+                        <div style={{ background: 'white', padding: 20, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('dash.soilHealthScore')}</div>
                             <div style={{ fontSize: 32, fontWeight: 700, color: '#1976d2' }}>
                                 {summaryData.overallHealth != null ? `${summaryData.overallHealth}%` : '-'}
                             </div>
-                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>Based on weighted SHI formula</div>
+                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>{t('dash.shiBasis')}</div>
                         </div>
-                        <div style={{
-                            background: 'white',
-                            padding: 20,
-                            borderRadius: 12,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}>
-                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Avg Nutrient Level</div>
+                        <div style={{ background: 'white', padding: 20, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('dash.avgNutrientLevel')}</div>
                             <div style={{ fontSize: 32, fontWeight: 700, color: '#4caf50' }}>
                                 {summaryData.avgNutrient != null ? `${summaryData.avgNutrient}%` : '-'}
                             </div>
-                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>All nutrients combined</div>
+                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>{t('dash.allNutrientsCombined')}</div>
                         </div>
-                        <div style={{
-                            background: 'white',
-                            padding: 20,
-                            borderRadius: 12,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}>
-                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Soil Moisture</div>
+                        <div style={{ background: 'white', padding: 20, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('dash.soilMoisture')}</div>
                             <div style={{ fontSize: 32, fontWeight: 700, color: '#2196f3' }}>
                                 {summaryData.moisture?.toFixed(1)}%
                             </div>
-                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>Current soil moisture</div>
+                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>{t('dash.currentSoilMoisture')}</div>
                         </div>
-                        <div style={{
-                            background: 'white',
-                            padding: 20,
-                            borderRadius: 12,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}>
-                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Soil pH Level</div>
+                        <div style={{ background: 'white', padding: 20, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('dash.soilPhLevel')}</div>
                             <div style={{ fontSize: 32, fontWeight: 700, color: '#9c27b0' }}>
                                 {summaryData.pH?.toFixed(1)}
                             </div>
-                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>Acidity/alkalinity</div>
+                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>{t('dash.acidityAlkalinity')}</div>
                         </div>
-                        <div style={{
-                            background: 'white',
-                            padding: 20,
-                            borderRadius: 12,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}>
-                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Soil Temperature</div>
+                        <div style={{ background: 'white', padding: 20, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('dash.soilTemperature')}</div>
                             <div style={{ fontSize: 32, fontWeight: 700, color: '#ff5722' }}>
                                 {summaryData.temp?.toFixed(1)}°C
                             </div>
-                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>Current soil temp</div>
+                            <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>{t('dash.currentSoilTemp')}</div>
                         </div>
-                        <div style={{
-                            background: 'white',
-                            padding: 20,
-                            borderRadius: 12,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                        }}>
-                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Status Overview</div>
+                        <div style={{ background: 'white', padding: 20, borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('dash.statusOverview')}</div>
                             <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                                 <div style={{ flex: 1, textAlign: 'center' }}>
                                     <div style={{ fontSize: 20, fontWeight: 700, color: '#4caf50' }}>{summaryData.goodCount}</div>
-                                    <div style={{ fontSize: 10, color: '#999' }}>Good</div>
+                                    <div style={{ fontSize: 10, color: '#999' }}>{t('dash.good')}</div>
                                 </div>
                                 <div style={{ flex: 1, textAlign: 'center' }}>
                                     <div style={{ fontSize: 20, fontWeight: 700, color: '#ff9800' }}>{summaryData.warningCount}</div>
-                                    <div style={{ fontSize: 10, color: '#999' }}>Warning</div>
+                                    <div style={{ fontSize: 10, color: '#999' }}>{t('dash.warning')}</div>
                                 </div>
                                 <div style={{ flex: 1, textAlign: 'center' }}>
                                     <div style={{ fontSize: 20, fontWeight: 700, color: '#f44336' }}>{summaryData.criticalCount}</div>
-                                    <div style={{ fontSize: 10, color: '#999' }}>Critical</div>
+                                    <div style={{ fontSize: 10, color: '#999' }}>{t('dash.critical')}</div>
                                 </div>
                             </div>
                         </div>
@@ -761,7 +733,7 @@ const Dashboard = ({ isOpen, toggle }) => {
                 {/* Environmental Conditions */}
                 <div style={{ marginBottom: 24 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                        <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>Environmental Conditions</h2>
+                        <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>{t('dash.environmentalConditions')}</h2>
                         <button
                             onClick={() => downloadExcelReport(data, ideals, summaryData)}
                             style={{
@@ -774,14 +746,10 @@ const Dashboard = ({ isOpen, toggle }) => {
                                 fontSize: 13
                             }}
                         >
-                            Download CSV Report
+                            {t('dash.downloadCsvReport')}
                         </button>
                     </div>
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                        gap: 20
-                    }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
                         {environmentalMetrics.map(metric => (
                             <MetricChart
                                 key={metric.key}
@@ -797,7 +765,7 @@ const Dashboard = ({ isOpen, toggle }) => {
 
                 {/* Nutrient Performance Grid */}
                 <div style={{ marginBottom: 24 }}>
-                    <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Nutrient Performance Analysis</h2>
+                    <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>{t('dash.nutrientPerformance')}</h2>
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',

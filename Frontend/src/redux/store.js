@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import filterReducer from "./filterSlice";
 import dateReducer from "./dateSlice";
+import languageReducer from "./languageSlice";
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
@@ -14,7 +15,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
     auth: authReducer,
     filter: filterReducer,
-    datePicker:dateReducer
+    datePicker: dateReducer,
+    language: languageReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

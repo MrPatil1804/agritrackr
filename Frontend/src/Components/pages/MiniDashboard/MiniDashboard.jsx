@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell, PieChart, Pie, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const Header = styled(Box)`
   background-color: hsl(0deg 0% 95.29%);
@@ -103,6 +104,7 @@ const DateSection = styled(Box)`
 function MiniDashboard({ isOpen, toggle, isVisi = true }) {
   // Get dates from Redux store for filtering
   const dates = useSelector((state) => state.datePicker.dates);
+  const { t } = useTranslation();
 
   const [soilData, setSoilData] = useState([]);
   const [ideals, setIdeals] = useState({});
@@ -218,7 +220,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
   // Format date range for display in top bar
   const formatDateRange = () => {
     if (!dates || dates.length < 2) {
-      return "All Dates";
+      return t('home.allDates');
     }
     const startDate = new Date(dates[0]);
     const endDate = new Date(dates[1]);
@@ -231,9 +233,9 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
     return (
       <GridContainer isOpen={isOpen}>
         <Header isOpen={isOpen}>
-          <Navbar title="Mini-Dashboard" />
+          <Navbar title={t('mini.title')} />
         </Header>
-        <div style={{ padding: 40, textAlign: 'center', marginTop: 80 }}>Loading soil data...</div>
+        <div style={{ padding: 40, textAlign: 'center', marginTop: 80 }}>{t('mini.loadingSoilData')}</div>
       </GridContainer>
     );
   }
@@ -261,10 +263,10 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
         <TopBar>
           <NameAndDateSection>
             <NameSection>
-              <div className="value">Mini-Dashboard</div>
+              <div className="value">{t('mini.title')}</div>
             </NameSection>
             <DateSection>
-              <div className="label">Date Range</div>
+              <div className="label">{t('home.dateRange')}</div>
               <div className="date-range">{formatDateRange()}</div>
             </DateSection>
           </NameAndDateSection>
@@ -282,7 +284,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
               borderRadius: 12,
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Soil Moisture</div>
+              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('mini.soilMoisture')}</div>
               <div style={{ fontSize: 32, fontWeight: 700, color: '#2196f3' }}>
                 {latestMoisture.toFixed(1)}%
               </div>
@@ -291,7 +293,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
                 color: getStatusColor(latestMoisture, safeIdeals.moisture),
                 marginTop: 4
               }}>
-                Target: {safeIdeals.moisture}%
+                {t('mini.target')}: {safeIdeals.moisture}%
               </div>
             </div>
 
@@ -301,7 +303,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
               borderRadius: 12,
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>pH Level</div>
+              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('mini.phLevel')}</div>
               <div style={{ fontSize: 32, fontWeight: 700, color: '#9c27b0' }}>
                 {latestPh.toFixed(1)}
               </div>
@@ -310,7 +312,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
                 color: getStatusColor(latestPh, safeIdeals.pH),
                 marginTop: 4
               }}>
-                Target: {safeIdeals.pH}
+                {t('mini.target')}: {safeIdeals.pH}
               </div>
             </div>
 
@@ -320,7 +322,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
               borderRadius: 12,
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>Temperature</div>
+              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{t('mini.temperature')}</div>
               <div style={{ fontSize: 32, fontWeight: 700, color: '#ff6b6b' }}>
                 {latestTemp.toFixed(1)}°C
               </div>
@@ -329,7 +331,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
                 color: getStatusColor(latestTemp, safeIdeals.temperature),
                 marginTop: 4
               }}>
-                Target: {safeIdeals.temperature}°C
+                {t('mini.target')}: {safeIdeals.temperature}°C
               </div>
             </div>
           </div>
@@ -345,7 +347,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
             borderRadius: 12,
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, marginTop: 0 }}>Nutrient Levels</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, marginTop: 0 }}>{t('mini.nutrientLevels')}</h2>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={nutrientData}>
                 <XAxis dataKey="name" />
@@ -359,7 +361,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
               </BarChart>
             </ResponsiveContainer>
             <div style={{ fontSize: 11, color: '#999', marginTop: 8 }}>
-              N (Nitrogen), P (Phosphorus), K (Potassium)
+              {t('mini.npkNote')}
             </div>
           </div>
 
@@ -373,20 +375,20 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               marginBottom: 16
             }}>
-              <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, marginTop: 0 }}>Latest Reading</h2>
+              <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, marginTop: 0 }}>{t('mini.latestReading')}</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 13, color: '#666' }}>Sensor ID</span>
+                  <span style={{ fontSize: 13, color: '#666' }}>{t('mini.sensorId')}</span>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{soilData[0]?.sensorId || 'N/A'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 13, color: '#666' }}>Time</span>
+                  <span style={{ fontSize: 13, color: '#666' }}>{t('mini.time')}</span>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>
                     {soilData[0] ? new Date(soilData[0].timestamp).toLocaleTimeString() : 'N/A'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 13, color: '#666' }}>Total Readings</span>
+                  <span style={{ fontSize: 13, color: '#666' }}>{t('mini.totalReadings')}</span>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{soilData.length}</span>
                 </div>
               </div>
@@ -400,7 +402,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
                 borderRadius: 12,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>Nitrogen (N)</div>
+                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>{t('mini.nitrogen')}</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: '#4caf50' }}>{getPercentage(avgNitrogen, safeIdeals.nitrogen).toFixed(1)}%</div>
                 <div style={{
                   width: '100%',
@@ -424,7 +426,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
                 borderRadius: 12,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>Phosphorus (P)</div>
+                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>{t('mini.phosphorus')}</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: '#2196f3' }}>{getPercentage(avgPhosphorus, safeIdeals.phosphorus).toFixed(1)}%</div>
                 <div style={{
                   width: '100%',
@@ -448,7 +450,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
                 borderRadius: 12,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>Potassium (K)</div>
+                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>{t('mini.potassium')}</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: '#ff9800' }}>{getPercentage(avgPotassium, safeIdeals.potassium).toFixed(1)}%</div>
                 <div style={{
                   width: '100%',
@@ -472,7 +474,7 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
                 borderRadius: 12,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>Calcium (Ca)</div>
+                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>{t('mini.calcium')}</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: '#9c27b0' }}>{avgCalcium}</div>
                 <div style={{
                   width: '100%',

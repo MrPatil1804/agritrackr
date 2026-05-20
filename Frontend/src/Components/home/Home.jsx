@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import barData from "../pages/api/barData.js";
 import { logout } from "../../redux/authSlice";
 import axios from "axios";
+import { useTranslation } from "../../hooks/useTranslation";
 
 /* ================= STYLES (UNCHANGED) ================= */
 
@@ -68,6 +69,7 @@ const Home = ({ isOpen, isMobile = false, sidebarWidth = 0, toggle }) => {
   const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [username, setUsername] = useState("");
   const [miniData, setMiniData] = useState(null);
@@ -156,7 +158,7 @@ const Home = ({ isOpen, isMobile = false, sidebarWidth = 0, toggle }) => {
     setNotifications([
       {
         id: Date.now(),
-        message: isMachineDown ? "Machine Down" : "Machine Running",
+        message: isMachineDown ? t('home.machineDown') : t('home.machineRunning'),
         duration: isMachineDown ? `${hrs} hr ${mins} min ago` : "",
         date: `${timestamp
           .getDate()

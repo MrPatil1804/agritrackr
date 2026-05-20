@@ -14,25 +14,23 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/authSlice';
 import axios from 'axios';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const Sidebar = ({ children, isOpen, toggle, isMobile = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const menuItem = [
-    { path: "miniDash", name: "Mini-Dashboard", icon: <DashboardIcon /> },
-    { path: "dashboard", name: "Dashboard", icon: <FaTh /> },
-    { path: "report", name: "Table View", icon: <TbReportAnalytics /> },
-    { path: "qualityc", name: "Report", icon: <SiWheniwork /> },
-    // { path: "config", name: "Configuration", icon: <PermDataSettingIcon /> },
-    // { path: "filters", name: "Filters", icon: <FaRegChartBar /> },
-    // { path: "Operator", name: "Operator Status", icon: <FaRegChartBar /> },
-    // { path: "Thresh", name: "Theshold", icon: <MdDataThresholding   /> },
+    { path: "miniDash", name: t('nav.miniDashboard'), icon: <DashboardIcon /> },
+    { path: "dashboard", name: t('nav.dashboard'), icon: <FaTh /> },
+    { path: "report", name: t('nav.tableView'), icon: <TbReportAnalytics /> },
+    { path: "qualityc", name: t('nav.report'), icon: <SiWheniwork /> },
   ];
 
   const bItem = [
-    { path: "settings", name: "Settings", icon: <IoSettingsOutline /> },
-    { path: "/", name: "Logout", icon: <MdOutlineLogout />, isLogout: true },
+    { path: "settings", name: t('nav.settings'), icon: <IoSettingsOutline /> },
+    { path: "/", name: t('nav.logout'), icon: <MdOutlineLogout />, isLogout: true },
   ];
 
   const handleLogout = async () => {

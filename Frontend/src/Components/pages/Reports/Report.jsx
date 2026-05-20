@@ -16,6 +16,7 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { SoilTableView } from "./utility";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useTranslation } from "../../../hooks/useTranslation";
 
 // Styled components for consistent layout
 const TopBar = styled(Box)`
@@ -133,6 +134,7 @@ const Report = ({ isOpen, toggle }) => {
   const componentPDF = useRef();
   const tableRef = useRef();
   const dates = useSelector((state) => state.datePicker.dates);
+  const { t } = useTranslation();
 
   // State for dropdown menu
   const [anchorEl, setAnchorEl] = useState(null);
@@ -244,7 +246,7 @@ const Report = ({ isOpen, toggle }) => {
   // Format date range for display in top bar
   const formatDateRange = () => {
     if (!dates || dates.length < 2) {
-      return "All Dates";
+      return t('home.allDates');
     }
     const startDate = new Date(dates[0]);
     const endDate = new Date(dates[1]);
@@ -265,10 +267,10 @@ const Report = ({ isOpen, toggle }) => {
         <TopBar>
           <NameAndDateSection>
             <NameSection>
-              <div className="value">Table View</div>
+              <div className="value">{t('report.title')}</div>
             </NameSection>
             <DateSection>
-              <div className="label">Date Range</div>
+              <div className="label">{t('home.dateRange')}</div>
               <div className="date-range">{formatDateRange()}</div>
             </DateSection>
           </NameAndDateSection>
@@ -293,13 +295,13 @@ const Report = ({ isOpen, toggle }) => {
               onClose={handleClose}
             >
               <MenuItem onClick={() => handleMenuItemClick("pdf")}>
-                Download as PDF
+                {t('report.downloadPdf')}
               </MenuItem>
               <MenuItem onClick={() => handleMenuItemClick("excel")}>
-                Download as Excel
+                {t('report.downloadExcel')}
               </MenuItem>
               <MenuItem onClick={() => handleMenuItemClick("csv")}>
-                Download as CSV
+                {t('report.downloadCsv')}
               </MenuItem>
             </Menu>
           </RightControls>

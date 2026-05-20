@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useLocation } from 'react-router-dom';
-import { AddMembers, CropMaster, Members, UserDetails, UserProfile, FarmSettings } from './utility';
+import { AddMembers, CropMaster, Members, UserDetails, UserProfile, FarmSettings, LanguageSettings } from './utility';
 import DeviceSettings from './DeviceSettings';
+import { useTranslation } from '../../../hooks/useTranslation';
 
 const Component = styled(Box)`
   margin-top: 9%;
@@ -87,42 +88,53 @@ const NavItem = styled(Typography)`
   }
 `;
 
-const navItems = ["User details", "Members", "Add Member", "Crop Master", "User Profile", "Farm Settings", "Device Settings"];
+// Tab key → translation key mapping
+const NAV_TABS = [
+  { key: 'User Details',     i18nKey: 'settings.userDetails'    },
+  { key: 'Members',          i18nKey: 'settings.members'        },
+  { key: 'Add Member',       i18nKey: 'settings.addMember'      },
+  { key: 'Crop Master',      i18nKey: 'settings.cropMaster'     },
+  { key: 'User Profile',     i18nKey: 'settings.userProfile'    },
+  { key: 'Farm Settings',    i18nKey: 'settings.farmSettings'   },
+  { key: 'Device Settings',  i18nKey: 'settings.deviceSettings' },
+  { key: 'Language',         i18nKey: 'settings.language'       },
+];
 
 function Setting() {
   const location = useLocation();
-  const initialSelectedItem = navItems[location.state?.selectedItem] || navItems[0];
+  const { t } = useTranslation();
 
-  const [selectedItem, setSelectedItem] = useState(initialSelectedItem);
-
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
-  };
+  const initialSelectedKey = NAV_TABS[location.state?.selectedItem]?.key || NAV_TABS[0].key;
+  const [selectedKey, setSelectedKey] = useState(initialSelectedKey);
 
   return (
     <Component>
       <Header>
-        <Typography sx={{ fontSize: { xs: 22, sm: 30 }, fontWeight: 600 }}>Settings</Typography>
+        <Typography sx={{ fontSize: { xs: 22, sm: 30 }, fontWeight: 600 }}>
+          {t('settings.title')}
+        </Typography>
         <Navbar>
-          {navItems.map((item, index) => (
+          {NAV_TABS.map((tab) => (
             <NavItem
-              key={index}
-              $isActive={selectedItem === item}
-              onClick={() => handleItemClick(item)}
+              key={tab.key}
+              $isActive={selectedKey === tab.key}
+              onClick={() => setSelectedKey(tab.key)}
             >
-              {item}
+              {t(tab.i18nKey)}
             </NavItem>
           ))}
         </Navbar>
       </Header>
+
       <MidSection>
-        {selectedItem === 'User details' && <UserDetails />}
-        {selectedItem === 'Members' && <Members />}
-        {selectedItem === 'Add Member' && <Box sx={{ justifyContent: 'center', display: 'flex' }}><AddMembers /></Box>}
-        {selectedItem === 'Crop Master' && <CropMaster />}
-        {selectedItem === 'User Profile' && <UserProfile />}
-        {selectedItem === 'Farm Settings' && <FarmSettings />}
-        {selectedItem === 'Device Settings' && <DeviceSettings />}
+        {selectedKey === 'User Details'    && <UserDetails />}
+        {selectedKey === 'Members'         && <Members />}
+        {selectedKey === 'Add Member'      && <Box sx={{ justifyContent: 'center', display: 'flex' }}><AddMembers /></Box>}
+        {selectedKey === 'Crop Master'     && <CropMaster />}
+        {selectedKey === 'User Profile'    && <UserProfile />}
+        {selectedKey === 'Farm Settings'   && <FarmSettings />}
+        {selectedKey === 'Device Settings' && <DeviceSettings />}
+        {selectedKey === 'Language'        && <LanguageSettings />}
       </MidSection>
     </Component>
   );

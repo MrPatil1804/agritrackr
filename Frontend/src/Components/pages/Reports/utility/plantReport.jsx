@@ -9,6 +9,7 @@ import {
   CTableHeaderCell,
   CTableDataCell,
 } from "@coreui/react";
+import { useTranslation } from "../../../../hooks/useTranslation";
 
 const StyledTable = styled(CTable)`
   tbody tr:nth-child(3n + 1) {
@@ -25,6 +26,7 @@ const StyledTable = styled(CTable)`
 // (no longer using the downtime helper in the compact table)
 
 const PlantReport = ({ dates }) => {
+  const { t } = useTranslation();
   // const userData = useSelector((state) => state.auth.userData); // not used in compact table
   const [reportData, setReportData] = useState(null);
 
@@ -79,6 +81,13 @@ const PlantReport = ({ dates }) => {
   const pageSize = 5;
 
   const normalize = (s) => (s === null || s === undefined ? '' : String(s).toLowerCase());
+  const isHealthyStatus = (status) => /^healthy$/i.test(String(status).trim());
+  const translateValue = (prefix, value) => {
+    if (!value) return '-';
+    const key = `${prefix}.${String(value).trim().toLowerCase().replace(/\s+/g, '')}`;
+    const translated = t(key);
+    return translated === key ? value : translated;
+  };
 
   // Map incoming reportData rows into the compact table shape
   const mappedRows = (Array.isArray(reportData) ? reportData : []).map((r) => {
@@ -108,11 +117,11 @@ const PlantReport = ({ dates }) => {
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div>
-          <p style={{ fontSize: "16px", fontWeight: "700", margin: 0 }}>Daily Summary</p>
+          <p style={{ fontSize: "16px", fontWeight: "700", margin: 0 }}>{t("report.dailySummary")}</p>
         </div>
         <div>
           <input
-            placeholder="Search data..."
+            placeholder={t("report.searchData")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid #e6e6e6' }}
@@ -123,12 +132,12 @@ const PlantReport = ({ dates }) => {
       <StyledTable bordered borderColor="gray" style={{ textAlign: "center" }}>
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell scope="col" style={{ textAlign: 'left' }}>Crop</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Farm Plot</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Growth Stage</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Health Status</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Estimated Yield (kg/ha)</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Last Scan</CTableHeaderCell>
+            <CTableHeaderCell scope="col" style={{ textAlign: 'left' }}>{t("report.crop")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("report.farmPlot")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("report.growthStage")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("report.healthStatus")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("report.estimatedYield")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("report.lastScan")}</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
@@ -137,10 +146,12 @@ const PlantReport = ({ dates }) => {
               <CTableRow key={index}>
                 <CTableDataCell style={{ textAlign: 'left' }}>{data.crop || '-'}</CTableDataCell>
                 <CTableDataCell>{data.farmPlot || '-'}</CTableDataCell>
-                <CTableDataCell>{data.growthStage || '-'}</CTableDataCell>
+                <CTableDataCell>{translateValue('growthStage', data.growthStage)}</CTableDataCell>
                 <CTableDataCell>
                   {data.healthStatus ? (
-                    <span style={{ padding: '6px 10px', borderRadius: 16, background: /healthy/i.test(String(data.healthStatus)) ? '#c8e6c9' : '#ffcdd2', color: /healthy/i.test(String(data.healthStatus)) ? '#1b5e20' : '#c62828', fontWeight: 700 }}>{data.healthStatus}</span>
+                    <span style={{ padding: '6px 10px', borderRadius: 16, background: isHealthyStatus(data.healthStatus) ? '#c8e6c9' : '#ffcdd2', color: isHealthyStatus(data.healthStatus) ? '#1b5e20' : '#c62828', fontWeight: 700 }}>
+                      {translateValue('healthStatus', data.healthStatus)}
+                    </span>
                   ) : (
                     <span style={{ color: '#666' }}>-</span>
                   )}
@@ -151,7 +162,7 @@ const PlantReport = ({ dates }) => {
             ))
           ) : (
             <CTableRow>
-              <CTableDataCell colSpan="6">No Dates Selected/No Data in Selected Dates</CTableDataCell>
+              <CTableDataCell colSpan="6">{t("report.noSelectedDateData")}</CTableDataCell>
             </CTableRow>
           )}
         </CTableBody>
@@ -173,7 +184,7 @@ const PlantReport = ({ dates }) => {
             opacity: page <= 1 ? 0.6 : 1
           }}
         >
-          Previous
+          {t("pagination.previous")}
         </button>
         <div style={{ color: '#2e7d32', fontWeight: 600 }}>{page} / {totalPages}</div>
         <button 
@@ -190,7 +201,7 @@ const PlantReport = ({ dates }) => {
             opacity: page >= totalPages ? 0.6 : 1
           }}
         >
-          Next
+          {t("pagination.next")}
         </button>
       </div>
     </>

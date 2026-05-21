@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useReactToPrint } from "react-to-print";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
 import {
   CTable,
   CTableHead,
@@ -10,17 +8,11 @@ import {
   CTableDataCell,
 } from "@coreui/react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useTranslation } from "../../../../hooks/useTranslation";
 
 function QualityReport({ dates }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const { t } = useTranslation();
   const [reportData, setQtyReportData] = useState([]);
-  const componentPDF = useRef();
-
-  // const generatePDF = useReactToPrint({
-  //   content: () => componentPDF.current,
-  //   documentTitle: "Quality Report",
-  //   onAfterPrint: () => alert("Data downloaded successfully"),
-  // });
 
   // API for the report
   const URL = `https://api.golain.io/876dbb57-d0aa-447b-ac43-983b1b1aca19/wke/getQualityReport/get-qualityReport/?start=${dates[0]}&stop=${dates[1]}`;
@@ -50,7 +42,7 @@ function QualityReport({ dates }) {
 
   return (
     <>
-      <p style={{ fontSize: "16px", fontWeight: "700" }}>Daily Summary</p>
+      <p style={{ fontSize: "16px", fontWeight: "700" }}>{t("report.dailySummary")}</p>
 
       <CTable
         bordered
@@ -60,10 +52,10 @@ function QualityReport({ dates }) {
         <CTableHead>
           <CTableRow>
             {/* <CTableHeaderCell scope="col">Product Name</CTableHeaderCell> */}
-            <CTableHeaderCell scope="col">Date</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Ok Quality</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Not Ok Quality</CTableHeaderCell>
-            <CTableHeaderCell scope="col">% Rejection</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("table.date")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("quality.ok")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("quality.notOk")}</CTableHeaderCell>
+            <CTableHeaderCell scope="col">{t("quality.rejectionPercent")}</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
@@ -89,7 +81,7 @@ function QualityReport({ dates }) {
           ) : (
             <CTableRow>
               <CTableDataCell colSpan="10">
-                No Dates Selected/No Data in Selected Dates
+                {t("report.noSelectedDateData")}
               </CTableDataCell>
             </CTableRow>
           )}

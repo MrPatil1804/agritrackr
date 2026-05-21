@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { Box, Button, Switch, Typography } from "@mui/material";
@@ -12,6 +12,8 @@ import {
 } from "@coreui/react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import PropTypes from "prop-types";
+import { useTranslation } from "../../../../hooks/useTranslation";
 
 const Header = styled(Box)`
   margin: 8px 0 10px 0;
@@ -37,6 +39,7 @@ const Section = styled(Box)`
 
 function formatDate(ts) {
   const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "-";
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
@@ -44,15 +47,19 @@ function formatDate(ts) {
 }
 
 export default function SoilTableView({ dates }) {
+  const { t } = useTranslation();
   const [type, setType] = useState("macro");
   const [mode, setMode] = useState("count");
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [statusCounts, setStatusCounts] = useState({ good: 0, warning: 0, critical: 0 });
   const [avgNutrient, setAvgNutrient] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -62,7 +69,10 @@ export default function SoilTableView({ dates }) {
         params.type = type;
         params.mode = mode;
         params.limit = 500; // Increase limit to get all data in date range
-        const res = await axios.get("/api/v1/soil/table", { params });
+        const res = await axios.get("/api/v1/soil/table", {
+          params,
+          signal: controller.signal,
+        });
         const data = res?.data?.data || {};
         setColumns(data.columns || []);
         // ensure table rows are sorted latest-first by date/timestamp
@@ -80,11 +90,16 @@ export default function SoilTableView({ dates }) {
         if (dates && dates[1]) soilParams.end = dates[1];
         soilParams.limit = 500; // Increase limit to get all data in date range
         // Note: NOT passing type parameter here - we need ALL nutrients for status calculation
-        const soilRes = await axios.get("/api/v1/soil/data", { params: soilParams });
+        const soilRes = await axios.get("/api/v1/soil/data", {
+          params: soilParams,
+          signal: controller.signal,
+        });
         const soilData = soilRes.data?.data || [];
 
         // Fetch ideal values
-        const idealsRes = await axios.get("/api/v1/soil/ideals");
+        const idealsRes = await axios.get("/api/v1/soil/ideals", {
+          signal: controller.signal,
+        });
         const idealsData = idealsRes.data?.data || {};
 
         // Get latest raw data for status calculation - use sorted descending by timestamp
@@ -172,63 +187,83 @@ export default function SoilTableView({ dates }) {
           setAvgNutrient(null);
         }
       } catch (err) {
+        if (axios.isCancel(err) || err.name === "CanceledError") return;
         console.error('Error fetching soil data:', err);
         setColumns([]);
         setRows([]);
         setStatusCounts({ good: 0, warning: 0, critical: 0 });
         setAvgNutrient(null);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
     fetchData();
+
+    return () => controller.abort();
   }, [dates, type, mode]);
 
   const visibleColumns = useMemo(() => columns.filter(c => c !== 'sodium'), [columns]);
 
+  const getColumnLabel = (column) => {
+    if (column === "date") return t("table.date");
+    const translated = t(`nutrient.${column}`);
+    return translated === `nutrient.${column}`
+      ? column.charAt(0).toUpperCase() + column.slice(1)
+      : translated;
+  };
+
   const handleExportExcel = async () => {
+    if (exporting || rows.length === 0 || visibleColumns.length === 0) return;
+    setExporting(true);
     const workbook = new ExcelJS.Workbook();
 
-    // Summary Sheet
-    const summarySheet = workbook.addWorksheet("Summary");
-    summarySheet.addRow(['Metric', 'Value']);
-    summarySheet.addRow(['Average Nutrient (%)', avgNutrient ?? '-']);
-    summarySheet.addRow([]);  // Empty row
-    summarySheet.addRow(['Status Overview', '']);
-    summarySheet.addRow(['Good', statusCounts.good]);
-    summarySheet.addRow(['Warning', statusCounts.warning]);
-    summarySheet.addRow(['Critical', statusCounts.critical]);
+    try {
+      // Summary Sheet
+      const summarySheet = workbook.addWorksheet("Summary");
+      summarySheet.addRow([t("table.metric"), t("table.value")]);
+      summarySheet.addRow([`${t("report.averageNutrient")} (%)`, avgNutrient ?? '-']);
+      summarySheet.addRow([]);  // Empty row
+      summarySheet.addRow([t("dash.statusOverview"), '']);
+      summarySheet.addRow([t("dash.good"), statusCounts.good]);
+      summarySheet.addRow([t("dash.warning"), statusCounts.warning]);
+      summarySheet.addRow([t("dash.critical"), statusCounts.critical]);
 
-    // Nutrient Data Sheet
-    const worksheet = workbook.addWorksheet("Nutrient Table");
-    const header = visibleColumns.map((c) => (c === "date" ? "Date" : c.charAt(0).toUpperCase() + c.slice(1)));
-    worksheet.addRow(header).font = { bold: true };
-    rows.forEach((r) => {
-      const rowData = visibleColumns.map((c) => {
-        if (c === "date") return r[c] ? formatDate(r[c]) : "-";
-        const v = r[c];
-        return v === null || v === undefined ? "-" : v;
+      // Nutrient Data Sheet
+      const worksheet = workbook.addWorksheet(t("report.nutrientTable"));
+      const header = visibleColumns.map(getColumnLabel);
+      worksheet.addRow(header).font = { bold: true };
+      rows.forEach((r) => {
+        const rowData = visibleColumns.map((c) => {
+          if (c === "date") return r[c] ? formatDate(r[c]) : "-";
+          const v = r[c];
+          return v === null || v === undefined ? "-" : v;
+        });
+        worksheet.addRow(rowData);
       });
-      worksheet.addRow(rowData);
-    });
-    worksheet.columns.forEach((col) => {
-      let maxLength = 10;
-      col.eachCell({ includeEmpty: true }, (cell) => {
-        const v = cell.value ? String(cell.value) : "";
-        maxLength = Math.max(maxLength, v.length + 2);
+      worksheet.columns.forEach((col) => {
+        let maxLength = 10;
+        col.eachCell({ includeEmpty: true }, (cell) => {
+          const v = cell.value ? String(cell.value) : "";
+          maxLength = Math.max(maxLength, v.length + 2);
+        });
+        col.width = Math.min(maxLength, 40);
       });
-      col.width = Math.min(maxLength, 40);
-    });
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      saveAs(blob, "nutrient_table.xlsx");
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
     <Section>
       <Header>
-        <Typography sx={{ color: "#0f2765", fontWeight: 700 }}>Nutrient Details</Typography>
+        <Typography sx={{ color: "#0f2765", fontWeight: 700 }}>{t("report.nutrientDetails")}</Typography>
         <Controls>
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button
@@ -236,25 +271,31 @@ export default function SoilTableView({ dates }) {
               onClick={() => setType("macro")}
               sx={{ color: "#0f2765", fontWeight: 600 }}
             >
-              MACRO-NUTRIENTS
+              {t("report.macroNutrients")}
             </Button>
             <Button
               className={type === "micro" ? "active" : ""}
               onClick={() => setType("micro")}
               sx={{ color: "#0f2765", fontWeight: 600 }}
             >
-              MICRO-NUTRIENTS
+              {t("report.microNutrients")}
             </Button>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography sx={{ color: "#0f2765", fontSize: 13 }}>Count</Typography>
+            <Typography sx={{ color: "#0f2765", fontSize: 13 }}>{t("report.count")}</Typography>
             <Switch
               checked={mode === "percentage"}
               onChange={(e) => setMode(e.target.checked ? "percentage" : "count")}
             />
-            <Typography sx={{ color: "#0f2765", fontSize: 13 }}>Percentage</Typography>
+            <Typography sx={{ color: "#0f2765", fontSize: 13 }}>{t("report.percentage")}</Typography>
           </Box>
-          <Button onClick={handleExportExcel} sx={{ color: "#0f2765", fontWeight: 600 }}>Export Table</Button>
+          <Button
+            onClick={handleExportExcel}
+            disabled={loading || exporting || rows.length === 0 || visibleColumns.length === 0}
+            sx={{ color: "#0f2765", fontWeight: 600 }}
+          >
+            {t("report.exportTable")}
+          </Button>
         </Controls>
       </Header>
 
@@ -267,11 +308,11 @@ export default function SoilTableView({ dates }) {
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0'
         }}>
-          <Typography sx={{ fontSize: 12, color: '#0f2765', marginBottom: 1 }}>Average Nutrient</Typography>
+          <Typography sx={{ fontSize: 12, color: '#0f2765', marginBottom: 1 }}>{t("report.averageNutrient")}</Typography>
           <Typography sx={{ fontSize: 28, fontWeight: 700, color: '#4caf50' }}>
             {avgNutrient !== null ? `${avgNutrient}%` : '-'}
           </Typography>
-          <Typography sx={{ fontSize: 11, color: '#999' }}>All 10 nutrients combined</Typography>
+          <Typography sx={{ fontSize: 11, color: '#999' }}>{t("report.all10NutrientsCombined")}</Typography>
         </Box>
 
         <Box sx={{
@@ -281,19 +322,19 @@ export default function SoilTableView({ dates }) {
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0'
         }}>
-          <Typography sx={{ fontSize: 12, color: '#0f2765', marginBottom: 1 }}>Status Overview</Typography>
+          <Typography sx={{ fontSize: 12, color: '#0f2765', marginBottom: 1 }}>{t("dash.statusOverview")}</Typography>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'space-around' }}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography sx={{ fontSize: 28, fontWeight: 700, color: '#4caf50' }}>{statusCounts.good}</Typography>
-              <Typography sx={{ fontSize: 10, color: '#66bb6a' }}>Good</Typography>
+              <Typography sx={{ fontSize: 10, color: '#66bb6a' }}>{t("dash.good")}</Typography>
             </Box>
             <Box sx={{ textAlign: 'center' }}>
               <Typography sx={{ fontSize: 28, fontWeight: 700, color: '#ff9800' }}>{statusCounts.warning}</Typography>
-              <Typography sx={{ fontSize: 10, color: '#ffb74d' }}>Warning</Typography>
+              <Typography sx={{ fontSize: 10, color: '#ffb74d' }}>{t("dash.warning")}</Typography>
             </Box>
             <Box sx={{ textAlign: 'center' }}>
               <Typography sx={{ fontSize: 28, fontWeight: 700, color: '#f44336' }}>{statusCounts.critical}</Typography>
-              <Typography sx={{ fontSize: 10, color: '#e57373' }}>Critical</Typography>
+              <Typography sx={{ fontSize: 10, color: '#e57373' }}>{t("dash.critical")}</Typography>
             </Box>
           </Box>
         </Box>
@@ -305,7 +346,7 @@ export default function SoilTableView({ dates }) {
             <CTableRow>
               {visibleColumns.map((c) => (
                 <CTableHeaderCell key={c} style={{ whiteSpace: "nowrap" }}>
-                  {c === "date" ? "Date" : c.charAt(0).toUpperCase() + c.slice(1)}
+                  {getColumnLabel(c)}
                 </CTableHeaderCell>
               ))}
             </CTableRow>
@@ -313,7 +354,7 @@ export default function SoilTableView({ dates }) {
           <CTableBody>
             {loading ? (
               <CTableRow>
-                <CTableDataCell colSpan={visibleColumns.length}>Loading...</CTableDataCell>
+                <CTableDataCell colSpan={Math.max(visibleColumns.length, 1)}>{t("common.loading")}</CTableDataCell>
               </CTableRow>
             ) : rows && rows.length > 0 ? (
               rows.map((r, idx) => (
@@ -333,7 +374,7 @@ export default function SoilTableView({ dates }) {
               ))
             ) : (
               <CTableRow>
-                <CTableDataCell colSpan={visibleColumns.length}>No Data</CTableDataCell>
+                <CTableDataCell colSpan={Math.max(visibleColumns.length, 1)}>{t("common.noData")}</CTableDataCell>
               </CTableRow>
             )}
           </CTableBody>
@@ -342,3 +383,7 @@ export default function SoilTableView({ dates }) {
     </Section>
   );
 }
+
+SoilTableView.propTypes = {
+  dates: PropTypes.arrayOf(PropTypes.string),
+};

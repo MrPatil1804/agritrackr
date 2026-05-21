@@ -9,8 +9,10 @@ import Datepicker from '../../../DateTimePicker/DatePicker';
 import axios from 'axios';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import PropTypes from 'prop-types';
 
 import { toast } from 'react-toastify';
+import { useTranslation } from '../../../../hooks/useTranslation';
 
 
 
@@ -145,20 +147,22 @@ const getMetricStatus = (metric, value, idealValue = null) => {
       if (value >= 5.5 && value <= 8.0) return { status: 'Warning', color: '#ff9800', bgColor: '#fff3e0' };
       return { status: 'Critical', color: '#f44336', bgColor: '#ffebee' };
     
-    case 'nitrogen':
+    case 'nitrogen': {
       // Nitrogen proxy (phosphorus): ideal ~70 ppm, ±10% Good, 10-20% Warning, >20% Critical
       const nitrogenIdeal = idealValue || 70;
       const nitrogenDeviation = Math.abs(value - nitrogenIdeal) / nitrogenIdeal;
       if (nitrogenDeviation <= 0.1) return { status: 'Good', color: '#4caf50', bgColor: '#e8f5e9' };
       if (nitrogenDeviation <= 0.2) return { status: 'Warning', color: '#ff9800', bgColor: '#fff3e0' };
       return { status: 'Critical', color: '#f44336', bgColor: '#ffebee' };
+    }
     
-    case 'waterUsage':
+    case 'waterUsage': {
       // Water usage: lower is better. <ideal Good, ideal-1.5x Warning, >1.5x Critical
       const waterIdeal = idealValue || 500;
       if (value <= waterIdeal) return { status: 'Good', color: '#4caf50', bgColor: '#e8f5e9' };
       if (value <= waterIdeal * 1.5) return { status: 'Warning', color: '#ff9800', bgColor: '#fff3e0' };
       return { status: 'Critical', color: '#f44336', bgColor: '#ffebee' };
+    }
     
     case 'diseaseIncidence':
       // Disease: lower is better. <5% Good, 5-15% Warning, >15% Critical
@@ -172,21 +176,38 @@ const getMetricStatus = (metric, value, idealValue = null) => {
 };
 
 // Status badge component
-const StatusBadge = ({ status, color, bgColor }) => (
-  <span style={{
-    padding: '4px 10px',
-    borderRadius: 12,
-    background: bgColor,
-    color: color,
-    fontWeight: 600,
-    fontSize: 11,
-    marginLeft: 8,
-  }}>
-    {status}
-  </span>
-);
+const StatusBadge = ({ status, color, bgColor }) => {
+  const { t } = useTranslation();
+  const statusLabels = {
+    Good: t('dash.good'),
+    Warning: t('dash.warning'),
+    Critical: t('dash.critical'),
+    'N/A': t('common.notAvailable'),
+  };
+
+  return (
+    <span style={{
+      padding: '4px 10px',
+      borderRadius: 12,
+      background: bgColor,
+      color: color,
+      fontWeight: 600,
+      fontSize: 11,
+      marginLeft: 8,
+    }}>
+      {statusLabels[status] || status}
+    </span>
+  );
+};
+
+StatusBadge.propTypes = {
+  status: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
+  bgColor: PropTypes.string.isRequired,
+};
 
 const QualityController = () => {
+  const { t } = useTranslation();
   const dates = useSelector((state) => state.datePicker.dates);
   // Default date range: January 1 - February 20, 2026 (matching seeded data)
   const defaultStart = new Date('2026-01-01T00:00:00.000Z');
@@ -436,10 +457,10 @@ const QualityController = () => {
         <TopBar>
           <NameAndDateSection>
             <NameSection>
-              <div className="value">Farm Performance Report</div>
+              <div className="value">{t('report.farmPerformanceReport')}</div>
             </NameSection>
             <DateSection>
-              <div className="label">Date Range</div>
+              <div className="label">{t('home.dateRange')}</div>
               <div className="date-range">{formatDateRange()}</div>
             </DateSection>
           </NameAndDateSection>
@@ -455,7 +476,7 @@ const QualityController = () => {
               }}
               onClick={exportReport}
             >
-              Download Report
+              {t('report.downloadReport')}
             </Button>
           </RightControls>
         </TopBar>
@@ -466,11 +487,11 @@ const QualityController = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>Average Nutrient</Typography>
+                  <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>{t('report.averageNutrient')}</Typography>
                   <StatusBadge {...getMetricStatus('avgNutrient', summary.avgNutrient)} />
                 </Box>
                 <Typography sx={{ fontSize: 32, fontWeight: 700, color: '#1b5e20' }}>{summary.avgNutrient !== null ? `${summary.avgNutrient}%` : '-'}</Typography>
-                <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>All nutrients combined</Typography>
+                <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>{t('dash.allNutrientsCombined')}</Typography>
               </div>
               <div>
                 {summary.avgDelta !== null ? (
@@ -487,19 +508,19 @@ const QualityController = () => {
           </Card>
 
           <Card>
-            <Typography sx={{ fontSize: 12, color: '#2e7d32', marginBottom: 1 }}>Status Overview</Typography>
+            <Typography sx={{ fontSize: 12, color: '#2e7d32', marginBottom: 1 }}>{t('dash.statusOverview')}</Typography>
             <Box sx={{ display: 'flex', gap: 3, alignItems: 'center', justifyContent: 'space-around' }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ fontSize: 32, fontWeight: 700, color: '#4caf50' }}>{summary.goodCount || 0}</Typography>
-                <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>Good</Typography>
+                <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>{t('dash.good')}</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ fontSize: 32, fontWeight: 700, color: '#ff9800' }}>{summary.warningCount || 0}</Typography>
-                <Typography sx={{ fontSize: 12, color: '#ffb74d' }}>Warning</Typography>
+                <Typography sx={{ fontSize: 12, color: '#ffb74d' }}>{t('dash.warning')}</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ fontSize: 32, fontWeight: 700, color: '#f44336' }}>{summary.criticalCount || 0}</Typography>
-                <Typography sx={{ fontSize: 12, color: '#e57373' }}>Critical</Typography>
+                <Typography sx={{ fontSize: 12, color: '#e57373' }}>{t('dash.critical')}</Typography>
               </Box>
             </Box>
           </Card>
@@ -509,41 +530,41 @@ const QualityController = () => {
         <CardsGrid>
           <Card>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>Soil pH</Typography>
+              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>{t('report.soilPh')}</Typography>
               <StatusBadge {...getMetricStatus('soilPH', summary.soilPH)} />
             </Box>
             <Typography sx={{ fontSize: 22, fontWeight: 700, color: '#1b5e20' }}>{summary.soilPH !== null ? summary.soilPH.toFixed(1) : '-'}</Typography>
-            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>Ideal: 6.0 - 7.5</Typography>
+            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>{t('report.ideal')}: 6.0 - 7.5</Typography>
           </Card>
           <Card>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>Nitrogen (proxy)</Typography>
+              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>{t('report.nitrogenProxy')}</Typography>
               <StatusBadge {...getMetricStatus('nitrogen', summary.nitrogen)} />
             </Box>
             <Typography sx={{ fontSize: 22, fontWeight: 700, color: '#1b5e20' }}>{summary.nitrogen !== null ? `${summary.nitrogen} ppm` : '-'}</Typography>
-            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>Ideal: ~70 ppm</Typography>
+            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>{t('report.ideal')}: ~70 ppm</Typography>
           </Card>
           <Card>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>Water Usage</Typography>
+              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>{t('report.waterUsage')}</Typography>
               <StatusBadge {...getMetricStatus('waterUsage', summary.waterUsage)} />
             </Box>
             <Typography sx={{ fontSize: 22, fontWeight: 700, color: '#1b5e20' }}>{summary.waterUsage !== null ? `${summary.waterUsage} gal/acre` : '-'}</Typography>
-            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>Lower is better</Typography>
+            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>{t('report.lowerIsBetter')}</Typography>
           </Card>
           <Card>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>Disease Incidence</Typography>
+              <Typography sx={{ fontSize: 12, color: '#2e7d32' }}>{t('report.diseaseIncidence')}</Typography>
               <StatusBadge {...getMetricStatus('diseaseIncidence', summary.diseaseIncidence)} />
             </Box>
             <Typography sx={{ fontSize: 22, fontWeight: 700, color: '#1b5e20' }}>{summary.diseaseIncidence !== null ? `${summary.diseaseIncidence}%` : '-'}</Typography>
-            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>Ideal: &lt;5%</Typography>
+            <Typography sx={{ fontSize: 12, color: '#66bb6a' }}>{t('report.ideal')}: &lt;5%</Typography>
           </Card>
         </CardsGrid>
 
         {/* Crop Yield & Health Data table (use existing PlantReport table) */}
         <Box sx={{ marginTop: 3 }}>
-          <Typography sx={{ fontSize: 16, fontWeight: 700, marginBottom: 1 }}>Crop Yield & Health Data</Typography>
+          <Typography sx={{ fontSize: 16, fontWeight: 700, marginBottom: 1 }}>{t('report.cropYieldHealthData')}</Typography>
           <PlantReport dates={dates || []} />
         </Box>
 

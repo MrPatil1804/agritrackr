@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Box, Typography } from '@mui/material';
 import styled, { keyframes } from 'styled-components';
@@ -182,20 +182,6 @@ const StyledSelect = styled.select`
   }
 `;
 
-/* Added-language pill shown below the grid */
-const AddedSection = styled.div`
-  margin-bottom: 28px;
-`;
-
-const AddedSectionTitle = styled.div`
-  font-size: 12px;
-  font-weight: 700;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 12px;
-`;
-
 const PreviewBox = styled(Box)`
   background: linear-gradient(135deg, #f9fbe7 0%, #f1f8e9 100%);
   border: 1.5px solid #c8e6c9;
@@ -288,21 +274,53 @@ const MORE_LANGUAGE_OPTIONS = [
   { code: 'pa', name: 'Punjabi',   native: 'ਪੰਜਾਬੀ',     flag: '🇮🇳', region: 'Punjab' },
 ];
 
+const getSavedLanguageCodes = () => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem('addedLanguageCodes') || '[]');
+    if (!Array.isArray(parsed)) return [];
+
+    const validCodes = new Set(MORE_LANGUAGE_OPTIONS.map((item) => item.code));
+    return parsed.filter((code) => validCodes.has(code));
+  } catch {
+    return [];
+  }
+};
+
 /* ────────────────────────── component ─────────────────────────── */
 function LanguageSettings() {
   const dispatch = useDispatch();
   const { t, language } = useTranslation();
 
   const [showSaved, setShowSaved]   = useState(false);
-  const [addedCodes, setAddedCodes] = useState([]);
+  const savedTimerRef = useRef(null);
+  const [addedCodes, setAddedCodes] = useState(() => {
+    const savedCodes = getSavedLanguageCodes();
+    const activeExtra = MORE_LANGUAGE_OPTIONS.some((item) => item.code === language) ? [language] : [];
+    return Array.from(new Set([...savedCodes, ...activeExtra]));
+  });
   const [dropdownValue, setDropdownValue] = useState('');   // controlled select
+
+  const showSavedMessage = () => {
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    setShowSaved(true);
+    savedTimerRef.current = setTimeout(() => setShowSaved(false), 2500);
+  };
+
+  useEffect(() => {
+    localStorage.setItem('addedLanguageCodes', JSON.stringify(addedCodes));
+  }, [addedCodes]);
+
+  useEffect(() => {
+    return () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    };
+  }, []);
 
   /* ── helpers ── */
   const handleSelect = (code) => {
     if (code === language) return;
     dispatch(setLanguage(code));
-    setShowSaved(true);
-    setTimeout(() => setShowSaved(false), 2500);
+    showSavedMessage();
   };
 
   const handleDropdownChange = (e) => {
@@ -315,8 +333,7 @@ function LanguageSettings() {
     setAddedCodes((prev) => [...prev, code]);
     // 2. Activate the selected language immediately (dispatch directly to avoid stale closure)
     dispatch(setLanguage(code));
-    setShowSaved(true);
-    setTimeout(() => setShowSaved(false), 2500);
+    showSavedMessage();
     // 3. Reset the controlled select back to placeholder
     setDropdownValue('');
   };
@@ -326,6 +343,7 @@ function LanguageSettings() {
     // if this removed language was active, fall back to English
     if (language === code) {
       dispatch(setLanguage('en'));
+      showSavedMessage();
     }
   };
 
@@ -373,12 +391,12 @@ function LanguageSettings() {
               aria-checked={isActive}
               id={`lang-option-${lang.code}`}
             >
-              {isActive && <ActiveBadge>✓ Active</ActiveBadge>}
+              {isActive && <ActiveBadge>✓ {t("lang.active")}</ActiveBadge>}
 
               {/* Remove button only for extra (dropdown-added) languages */}
               {isExtra && !isActive && (
                 <RemoveBtn
-                  title="Remove language"
+                  title={t("lang.removeLanguage")}
                   onClick={(e) => { e.stopPropagation(); handleRemoveAdded(lang.code); }}
                   aria-label={`Remove ${lang.name}`}
                 >
@@ -387,7 +405,7 @@ function LanguageSettings() {
               )}
               {isExtra && isActive && (
                 <RemoveBtn
-                  title="Remove language"
+                  title={t("lang.removeLanguage")}
                   onClick={(e) => { e.stopPropagation(); handleRemoveAdded(lang.code); }}
                   aria-label={`Remove ${lang.name}`}
                   style={{ top: 32 }}
@@ -413,8 +431,8 @@ function LanguageSettings() {
             <MoreCardLabel>
               <GlobeIcon>🌐</GlobeIcon>
               <div>
-                <MoreCardTitle>More Languages</MoreCardTitle>
-                <MoreCardSub>Add another Indian language</MoreCardSub>
+                <MoreCardTitle>{t("lang.moreLanguages")}</MoreCardTitle>
+                <MoreCardSub>{t("lang.addIndianLanguage")}</MoreCardSub>
               </div>
             </MoreCardLabel>
 
@@ -425,7 +443,7 @@ function LanguageSettings() {
               id="more-languages-select"
             >
               <option value="" disabled>
-                Select a language…
+                {t("lang.selectLanguage")}
               </option>
               {dropdownOptions.map((lang) => (
                 <option key={lang.code} value={lang.code}>

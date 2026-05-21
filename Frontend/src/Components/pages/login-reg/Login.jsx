@@ -40,6 +40,7 @@ function Login() {
     const [toast, setToast] = useState(false);
     const [alert, setAlert] = useState(false);
     const [error, setError] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
 
     const togglePasswordVisibility = () => {
         setHidePass(!hidePass);
@@ -65,6 +66,19 @@ function Login() {
 
     const performLogin = async (credentials, isAuto = false, shouldRemember = rememberMe) => {
         try {
+            const email = credentials.email?.trim();
+            const password = credentials.password;
+
+            if (!email || !password) {
+                throw {
+                    response: {
+                        data: {
+                            message: 'Email and password are required',
+                        },
+                    },
+                };
+            }
+
             const result = (await axios.post(`/api/v1/auth/login`, credentials, {
                 withCredentials: true,
             })).data;
@@ -81,14 +95,17 @@ function Login() {
                 localStorage.removeItem('rememberedPassword');
             }
             if (!isAuto) setToast(true)
+            setToastMessage('Login Successful');
             navigate('/app/Dashboard');
             setObj({ email: '', password: '' });
 
         } catch (error) {
             if (!isAuto) {
+                const message = error?.response?.data?.message || 'Login failed';
                 setToast(true);
                 setAlert(true);
-                setError(true)
+                setError(true);
+                setToastMessage(message);
             } else {
                 localStorage.removeItem('rememberedEmail');
                 localStorage.removeItem('rememberedPassword');
@@ -159,7 +176,7 @@ function Login() {
                     <Popup
                         setToast={setToast}
                         alert={alert}
-                        subMesg={error ? "Invalid credentials" : "Login Successful"}
+                        subMesg={toastMessage || (error ? "Invalid credentials" : "Login Successful")}
                         backgroundColor="red" // Pass error message conditionally
                     />
                 </div>

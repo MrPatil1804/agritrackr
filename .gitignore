@@ -2,4 +2,4 @@ node_modules
 BackEnd/logs/
 *.log
 *.log.*
-BackEnd/logs/**
+BackEnd/logs/**Frontend/.env 

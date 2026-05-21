@@ -41,11 +41,15 @@ const Nav = styled(Box)`
 `;
 
 const NavBrand = styled(Typography)`
-  font-size: 1.45rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.5px;
   user-select: none;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const HeroWrap = styled(Box)`
@@ -115,7 +119,7 @@ const GlassCTA = styled(Box)`
 `;
 
 const HeroTitle = styled(Typography)`
-  font-size: clamp(3rem, 9vw, 6.5rem);
+  font-size: clamp(3rem, 6vw, 6.5rem);
   font-weight: 900;
   letter-spacing: -3px;
   line-height: 1.0;
@@ -440,7 +444,7 @@ export default function LandingPage() {
 
       {/* ── Navbar ── */}
       <Nav sx={{ background: navBg, boxShadow: navShadow, backdropFilter: navBlur, WebkitBackdropFilter: navBlur }}>
-        <NavBrand>🌿 AgriTrackr</NavBrand>
+        <NavBrand>🌿 KrishiTrackr</NavBrand>
         <Box sx={{ display:'flex', gap:'10px', alignItems:'center' }}>
           <Button
             id="nav-login-btn"
@@ -478,7 +482,7 @@ export default function LandingPage() {
 
         <HeroContent>
           <GlassCTA>
-            <HeroTitle component="h1">AgriTrackr</HeroTitle>
+            <HeroTitle component="h1">KrishiTrackr</HeroTitle>
             <HeroSubtitle>Smart Agricultural IoT Monitoring Platform</HeroSubtitle>
             <HeroDesc>
               Monitor soil conditions, crop health, sensor data, and farm analytics
@@ -553,13 +557,13 @@ export default function LandingPage() {
             component="h2"
             sx={{ fontSize:'clamp(1.6rem,3.5vw,2.3rem)', fontWeight:800, color:'#fff', letterSpacing:'-0.5px' }}
           >
-            About AgriTrackr
+            About KrishiTrackr
           </Typography>
           <Divider />
           <Typography
             sx={{ fontSize:'clamp(0.95rem,1.8vw,1.1rem)', color:'rgba(255,255,255,0.86)', lineHeight:1.85, maxWidth:620, mx:'auto' }}
           >
-            AgriTrackr is an IoT-based agricultural monitoring platform designed to help farmers
+            KrishiTrackr is an IoT-based agricultural monitoring platform designed to help farmers
             and agricultural organizations monitor sensors, field conditions, and farm analytics efficiently.
           </Typography>
           <Box sx={{ mt:4, display:'flex', gap:2, justifyContent:'center', flexWrap:'wrap' }}>
@@ -597,7 +601,7 @@ export default function LandingPage() {
       <Footer>
         <FooterInner>
           <Typography sx={{ fontSize:'0.875rem', color:'rgba(255,255,255,0.55)', fontWeight:500 }}>
-            © AgriTrackr — Smart Agricultural IoT Monitoring
+            © KrishiTrackr — Smart Agricultural IoT Monitoring
           </Typography>
           <Box sx={{ display:'flex', gap:'28px', flexWrap:'wrap' }}>
             <FooterLink id="footer-about" href="#about">About</FooterLink>

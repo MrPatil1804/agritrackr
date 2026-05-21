@@ -347,15 +347,18 @@ const downloadCSV = (rows, filename = 'soil-data.csv') => {
 };
 
 const MetricChart = ({ data, metricKey, metricLabel, idealValue, unit = '%' }) => {
-    const chartData = data.map(item => ({
+    // Ensure data is ordered ascending by timestamp (oldest -> newest)
+    const sortedData = Array.isArray(data) ? [...data].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)) : [];
+
+    const chartData = sortedData.map(item => ({
         label: formatDate(item.timestamp),
         actual: item[metricKey],
         ideal: idealValue
     }));
 
     const getLastMetric = () => {
-        for (let i = data.length - 1; i >= 0; i--) {
-            const v = data[i][metricKey];
+        for (let i = sortedData.length - 1; i >= 0; i--) {
+            const v = sortedData[i][metricKey];
             if (v !== null && v !== undefined) return v;
         }
         return null;

@@ -1,5 +1,5 @@
 /**
- * Translations for the AgriTrackr dashboard.
+ * Translations for the KrishiTrackr dashboard.
  * Keys are short semantic identifiers; values are display strings.
  * Languages: en (English), hi (Hindi), mr (Marathi)
  *

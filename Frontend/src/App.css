@@ -205,16 +205,22 @@ main {
 	z-index: 9;
 }
 
+
 .top_section {
 	display: flex;
 	align-items: center;
-	padding: 35px 15px;
+	justify-content: space-between;
+	padding: 18px 12px;
 }
 
 .logo {
-	font-size: 30px;
-	margin-left: 14%;
-	padding-right: 15px;
+	font-size: 1.1rem;
+	margin: 0;
+	padding-right: 8px;
+	max-width: 140px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .logo.hide {
@@ -227,8 +233,9 @@ main {
 
 .bars {
 	display: flex;
-	font-size: 25px;
+	font-size: 22px;
 	cursor: pointer;
+	flex: 0 0 auto;
 }
 
 .menu_section {
@@ -327,12 +334,12 @@ main {
 	}
 
 	.top_section {
-		padding: 24px 14px;
+		padding: 14px 12px;
 	}
 
 	.logo {
-		font-size: 26px;
-		margin-left: 6%;
+		font-size: 1rem;
+		max-width: 120px;
 	}
 
 	.link {

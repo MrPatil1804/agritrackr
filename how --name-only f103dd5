@@ -1,0 +1,111 @@
+[33mcommit f103dd59b347f008c52095690a76e18c9ee9d38a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Shravani <148606408+Shravani-16@users.noreply.github.com>
+Date:   Thu May 21 15:08:12 2026 +0530
+
+    fixed languages for key Dashboard and Mini-Dashboard keys.
+
+[1mdiff --git a/Frontend/src/translations/index.js b/Frontend/src/translations/index.js[m
+[1mindex c1157c5..de7452d 100644[m
+[1m--- a/Frontend/src/translations/index.js[m
+[1m+++ b/Frontend/src/translations/index.js[m
+[36m@@ -977,7 +977,55 @@[m [mconst additionalTranslations = {[m
+ [m
+ const sharedAdditionalPhrases = {[m
+ 	bn: {[m
+[32m+[m		[32m"dash.title": "ড্যাশবোর্ড",[m
+[32m+[m		[32m"dash.summaryOverview": "সারাংশ অবলোকন",[m
+[32m+[m		[32m"dash.soilHealthScore": "মাটির স্বাস্থ্য স্কোর",[m
+[32m+[m		[32m"dash.shiBasis": "ওজনযুক্ত SHI সূত্রের ভিত্তিতে",[m
+[32m+[m		[32m"dash.avgNutrientLevel": "গড় পুষ্টি স্তর",[m
+ 		"dash.allNutrientsCombined": "সব পুষ্টি একসাথে",[m
+[32m+[m		[32m"dash.soilMoisture": "মাটির আর্দ্রতা",[m
+[32m+[m		[32m"dash.currentSoilMoisture": "বর্তমান মাটির আর্দ্রতা",[m
+[32m+[m		[32m"dash.soilPhLevel": "মাটির pH স্তর",[m
+[32m+[m		[32m"dash.acidityAlkalinity": "অম্লতা/ক্ষারত্ব",[m
+[32m+[m		[32m"dash.soilTemperature": "মাটির তাপমাত্রা",[m
+[32m+[m		[32m"dash.currentSoilTemp": "বর্তমান মাটির তাপমাত্রা",[m
+[32m+[m		[32m"dash.statusOverview": "অবস্থা সারাংশ",[m
+[32m+[m		[32m"dash.good": "ভাল",[m
+[32m+[m		[32m"dash.warning": "সতর্কতা",[m
+[32m+[m		[32m"dash.critical": "গুরুতর",[m
+[32m+[m		[32m"dash.environmentalConditions": "পরিবেশগত অবস্থা",[m
+[32m+[m		[32m"dash.nutrientPerformance": "পুষ্টি কর্মক্ষমতা বিশ্লেষণ",[m
+[32m+[m		[32m"dash.downloadCsvReport": "CSV রিপোর্ট ডাউনলোড",[m
+[32m+[m		[32m"dash.loadingSoilData": "মাটির ডেটা লোড হচ্ছে...",[m
+[32m+[m		[32m"metric.soilMoisture": "মাটির আর্দ্রতা",[m
+[32m+[m		[32m"metric.soilPh": "মাটির pH",[m
+[32m+[m		[32m"metric.soilTemperature": "মাটির তাপমাত্রা",[m
+[32m+[m		[32m"metric.nitrogen": "নাইট্রোজেন (N)",[m
+[32m+[m		[32m"metric.phosphorus": "ফসফরাস (P)",[m
+[32m+[m		[32m"metric.sulfur": "সালফার (S)",[m
+[32m+[m		[32m"metric.zinc": "জিঙ্ক (Zn)",[m
+[32m+[m		[32m"metric.iron": "লোহা (Fe)",[m
+[32m+[m		[32m"metric.manganese": "ম্যাঙ্গানিজ (Mn)",[m
+[32m+[m		[32m"metric.copper": "তামা (Cu)",[m
+[32m+[m		[32m"metric.potassium": "পটাশিয়াম (K)",[m
+[32m+[m		[32m"metric.calcium": "ক্যালসিয়াম (Ca)",[m
+[32m+[m		[32m"metric.magnesium": "ম্যাগনেসিয়াম (Mg)",[m
+[32m+[m		[32m"mini.title": "মিনি-ড্যাশবোর্ড",[m
+[32m+[m		[32m"mini.soilMoisture": "মাটির আর্দ্রতা",[m
+[32m+[m		[32m"mini.phLevel": "pH স্তর",[m
+[32m+[m		[32m"mini.temperature": "তাপমাত্রা",[m
+[32m+[m		[32m"mini.nutrientLevels": "পুষ্টি স্তর",[m
+[32m+[m		[32m"mini.latestReading": "সর্বশেষ রিডিং",[m
+[32m+[m		[32m"mini.sensorId": "সেন্সর আইডি",[m
+[32m+[m		[32m"mini.time": "সময়",[m
+[32m+[m		[32m"mini.totalReadings": "মোট রিডিং",[m
+[32m+[m		[32m"mini.nitrogen": "নাইট্রোজেন (N)",[m
+[32m+[m		[32m"mini.phosphorus": "ফসফরাস (P)",[m
+[32m+[m		[32m"mini.potassium": "পটাশিয়াম (K)",[m
+[32m+[m		[32m"mini.calcium": "ক্যালসিয়াম (Ca)",[m
+[32m+[m		[32m"mini.target": "লক্ষ্য",[m
+[32m+[m		[32m"mini.npkNote": "N (নাইট্রোজেন), P (ফসফরাস), K (পটাশিয়াম)",[m
+[32m+[m		[32m"mini.loadingSoilData": "মাটির ডেটা লোড হচ্ছে...",[m
+ 		"settings.userDetails": "ব্যবহারকারীর বিবরণ",[m
+ 		"settings.members": "সদস্য",[m
+ 		"settings.addMember": "সদস্য যোগ করুন",[m
+[36m@@ -1005,7 +1053,55 @@[m [mconst sharedAdditionalPhrases = {[m
+ 		"healthStatus.poor": "খারাপ",[m
+ 	},[m
+ 	te: {[m
+[32m+[m		[32m"dash.title": "డ్యాష్‌బోర్డ్",[m
+[32m+[m		[32m"dash.summaryOverview": "సారాంశ అవలోకనం",[m
+[32m+[m		[32m"dash.soilHealthScore": "మట్టి ఆరోగ్య స్కోర్",[m
+[32m+[m		[32m"dash.shiBasis": "బరువుదిద్దిన SHI సూత్రం ఆధారంగా",[m
+[32m+[m		[32m"dash.avgNutrientLevel": "సగటు పోషక స్థాయి",[m
+ 		"dash.allNutrientsCombined": "అన్ని పోషకాలు కలిపి",[m
+[32m+[m		[32m"dash.soilMoisture": "మట్టి తేమ",[m
+[32m+[m		[32m"dash.currentSoilMoisture": "ప్రస్తుత మట్టి తేమ",[m
+[32m+[m		[32m"dash.soilPhLevel": "మట్టి pH స్థాయి",[m
+[32m+[m		[32m"dash.acidityAlkalinity": "ఆమ్లత్వం/క్షారత్వం",[m
+[32m+[m		[32m"dash.soilTemperature": "మట్టి ఉష్ణోగ్రత",[m
+[32m+[m		[32m"dash.currentSoilTemp": "ప్రస్తుత మట్టి ఉష్ణోగ్రత",[m
+[32m+[m		[32m"dash.statusOverview": "స్థితి సారాంశం",[m
+[32m+[m		[32m"dash.good": "మంచిది",[m
+[32m+[m		[32m"dash.warning": "హెచ్చరిక",[m
+[32m+[m		[32m"dash.critical": "తీవ్రం",[m
+[32m+[m		[32m"dash.environmentalConditions": "పర్యావరణ పరిస్థితులు",[m
+[32m+[m		[32m"dash.nutrientPerformance": "పోషక పనితీరు విశ్లేషణ",[m
+[32m+[m		[32m"dash.downloadCsvReport": "CSV నివేదిక డౌన్‌లోడ్",[m
+[32m+[m		[32m"dash.loadingSoilData": "మట్టి డేటా లోడ్ అవుతోంది...",[m
+[32m+[m		[32m"metric.soilMoisture": "మట్టి తేమ",[m
+[32m+[m		[32m"metric.soilPh": "మట్టి pH",[m
+[32m+[m		[32m"metric.soilTemperature": "మట్టి ఉష్ణోగ్రత",[m
+[32m+[m		[32m"metric.nitrogen": "నైట్రోజన్ (N)",[m
+[32m+[m		[32m"metric.phosphorus": "ఫాస్ఫరస్ (P)",[m
+[32m+[m		[32m"metric.sulfur": "సల్ఫర్ (S)",[m
+[32m+[m		[32m"metric.zinc": "జింక్ (Zn)",[m
+[32m+[m		[32m"metric.iron": "ఇనుము (Fe)",[m
+[32m+[m		[32m"metric.manganese": "మాంగనీస్ (Mn)",[m
+[32m+[m		[32m"metric.copper": "రాగి (Cu)",[m
+[32m+[m		[32m"metric.potassium": "పొటాషియం (K)",[m
+[32m+[m		[32m"metric.calcium": "కాల్షియం (Ca)",[m
+[32m+[m		[32m"metric.magnesium": "మ్యాగ్నీషియం (Mg)",[m
+[32m+[m		[32m"mini.title": "మినీ-డ్యాష్‌బోర్డ్",[m
+[32m+[m		[32m"mini.soilMoisture": "మట్టి తేమ",[m
+[32m+[m		[32m"mini.phLevel": "pH స్థాయి",[m
+[32m+[m		[32m"mini.temperature": "ఉష్ణోగ్రత",[m
+[32m+[m		[32m"mini.nutrientLevels": "పోషక స్థాయిలు",[m
+[32m+[m		[32m"mini.latestReading": "తాజా రీడింగ్",[m
+[32m+[m		[32m"mini.sensorId": "సెన్సర్ ఐడి",[m
+[32m+[m		[32m"mini.time": "సమయం",

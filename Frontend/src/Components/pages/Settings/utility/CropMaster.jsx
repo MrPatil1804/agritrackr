@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import API from '../../../../utils/api';
 import {
     Box,
     Button,
@@ -63,7 +64,7 @@ function CropMaster() {
     const fetchCrops = async () => {
         try {
             setLoading(true);
-            const res = await axios.get('/api/v1/soil/crops', { withCredentials: true });
+            const res = await API.get('/api/v1/soil/crops');
             setCrops(res.data?.data || []);
         } catch (err) {
             setError(err?.response?.data?.message || 'Failed to load crop list');
@@ -97,9 +98,9 @@ function CropMaster() {
             setError('');
             const payload = toPayload(formData);
             if (editingId) {
-                await axios.put(`/api/v1/soil/crops/${editingId}`, payload, { withCredentials: true });
+                await API.put(`/api/v1/soil/crops/${editingId}`, payload);
             } else {
-                await axios.post('/api/v1/soil/crops', payload, { withCredentials: true });
+                await API.post('/api/v1/soil/crops', payload);
             }
             resetForm();
             await fetchCrops();
@@ -127,7 +128,7 @@ function CropMaster() {
         try {
             setSaving(true);
             setError('');
-            await axios.delete(`/api/v1/soil/crops/${cropId}`, { withCredentials: true });
+            await API.delete(`/api/v1/soil/crops/${cropId}`);
             if (editingId === cropId) resetForm();
             await fetchCrops();
         } catch (err) {
@@ -142,7 +143,7 @@ function CropMaster() {
         try {
             setSaving(true);
             setError('');
-            await axios.put(`/api/v1/soil/crops/${crop._id}`, { isActive: true }, { withCredentials: true });
+            await API.put(`/api/v1/soil/crops/${crop._id}`, { isActive: true });
             await fetchCrops();
         } catch (err) {
             setError(err?.response?.data?.message || 'Failed to set active crop');

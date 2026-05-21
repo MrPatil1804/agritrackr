@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
+import API from '../../../utils/api';
 import { login, logout } from '../../../redux/authSlice';
 import { Popup } from '../containts';
 
@@ -79,9 +80,7 @@ function Login() {
                 };
             }
 
-            const result = (await axios.post(`/api/v1/auth/login`, credentials, {
-                withCredentials: true,
-            })).data;
+            const result = (await API.post(`/api/v1/auth/login`, credentials)).data;
             dispatch(login({ userData: result.data?.user, role: result.data.user?.role }));
             if (!isAuto) {
                 // Successful manual login re-enables future auto-login.

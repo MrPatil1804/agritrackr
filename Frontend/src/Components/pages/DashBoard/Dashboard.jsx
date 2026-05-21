@@ -5,6 +5,7 @@ import Datepicker from "../../DateTimePicker/DatePicker";
 import styled from "styled-components";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
+import API from '../../../utils/api';
 import { useSelector } from 'react-redux';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
@@ -459,9 +460,7 @@ const Dashboard = ({ isOpen, toggle }) => {
                 if (dates && dates[1]) params.append('end', dates[1]);
                 params.append('limit', '500');
                 
-                const res = await axios.get(`/api/v1/soil/data?${params.toString()}`, {
-                    withCredentials: true,
-                });
+                const res = await API.get(`/api/v1/soil/data?${params.toString()}`);
                 const d = res.data?.data || [];
 
                 const toNum = v => { const n = Number(v); return Number.isFinite(n) ? n : null; };
@@ -483,7 +482,7 @@ const Dashboard = ({ isOpen, toggle }) => {
                 }));
                 setData(chartData);
 
-                const idealsRes = await axios.get('/api/v1/soil/ideals', { withCredentials: true });
+                const idealsRes = await API.get('/api/v1/soil/ideals');
                 const rawIdeals = idealsRes.data?.data || {};
 
                 const normalizeIdeal = (field) => {

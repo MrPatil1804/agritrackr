@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { InputField, PasswordInput, checkPassword } from '../../login-reg/Utility';
 import axios from 'axios';
+import API from '../../../../utils/api';
 //icons
 import { TbMailFilled } from "react-icons/tb";
 import { FaUser } from "react-icons/fa";
@@ -67,7 +68,7 @@ margin-top: 5%;
 
 
 function AddMembers() {
-    const URL = "http://172.104.242.7:3000";
+    const URL = import.meta.env.VITE_API_URL || '';
     const [perfPass, setPerfPass] = useState(false);
     const [matchPassword, setMatchPassword] = useState(false);
     const navigate = useNavigate();
@@ -158,7 +159,7 @@ function AddMembers() {
         }
 
         try {
-            await axios.post(`${URL}/auth/register`, obj, {
+            await API.post(`/api/v1/auth/register`, obj, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

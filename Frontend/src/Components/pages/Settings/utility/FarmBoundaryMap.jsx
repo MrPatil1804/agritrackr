@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import API from '../../../../utils/api';
 import {
     Box,
     Button,
@@ -173,8 +174,8 @@ function FarmBoundaryMap({ farm, onClose }) {
         const load = async () => {
             try {
                 const [boundaryRes, soilRes] = await Promise.all([
-                    axios.get(`/api/v1/settings/farms/${farm._id}/boundary`, { withCredentials: true }),
-                    axios.get(`/api/v1/soil/farm/${farm._id}`, { withCredentials: false }).catch(() => ({ data: { data: [] } })),
+                    API.get(`/api/v1/settings/farms/${farm._id}/boundary`),
+                    API.get(`/api/v1/soil/farm/${farm._id}`).catch(() => ({ data: { data: [] } })),
                 ]);
                 const boundary = boundaryRes.data?.data?.boundary || [];
                 if (boundary.length >= 3) { setPoints(boundary); setSavedPoints(boundary); }

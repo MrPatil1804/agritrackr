@@ -14,6 +14,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/authSlice';
 import axios from 'axios';
+import API from '../../utils/api';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const Sidebar = ({ children, isOpen, toggle, isMobile = false }) => {
@@ -36,9 +37,7 @@ const Sidebar = ({ children, isOpen, toggle, isMobile = false }) => {
   const handleLogout = async () => {
     try {
       // Call backend logout API
-      await axios.post('/api/v1/auth/logout', {}, {
-        withCredentials: true,
-      });
+      await API.post('/api/v1/auth/logout', {});
 
       // Clear Redux state
       dispatch(logout());

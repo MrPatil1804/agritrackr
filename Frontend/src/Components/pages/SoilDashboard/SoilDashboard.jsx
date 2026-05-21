@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
+import API from '../../../utils/api';
 import { useSelector } from 'react-redux';
 
 function formatDate(d) {
@@ -98,9 +99,7 @@ export default function SoilDashboard() {
                 if (dates && dates[1]) params.append('end', dates[1]);
                 params.append('limit', '500');
                 
-                const res = await axios.get(`/api/v1/soil/data?${params.toString()}`, {
-                    withCredentials: true,
-                });
+                const res = await API.get(`/api/v1/soil/data?${params.toString()}`);
                 const d = res.data?.data || [];
                 
                 const toNum = v => { const n = Number(v); return Number.isFinite(n) ? n : null; };
@@ -121,9 +120,7 @@ export default function SoilDashboard() {
                     sodium: toNum(item.sodium)
                 }));
                 setData(chartData);
-                const idealsRes = await axios.get('/api/v1/soil/ideals', {
-                    withCredentials: true,
-                });
+                const idealsRes = await API.get('/api/v1/soil/ideals');
                 const rawIdeals = idealsRes.data?.data || {};
 
                 const normalizeIdeal = (field, fallback) => {

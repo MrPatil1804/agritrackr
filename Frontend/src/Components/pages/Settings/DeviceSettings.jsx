@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import API from '../../../utils/api';
 import styled from 'styled-components';
 import {
   Card,
@@ -113,9 +114,7 @@ function DeviceSettings() {
   const fetchDevices = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/devices', {
-        withCredentials: true
-      });
+      const response = await API.get('/api/v1/devices');
 
       if (response.data?.success) {
         setDevices(response.data.data || []);

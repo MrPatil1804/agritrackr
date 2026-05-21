@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import barData from "../pages/api/barData.js";
 import { logout } from "../../redux/authSlice";
 import axios from "axios";
+import API from '../../utils/api';
 import { useTranslation } from "../../hooks/useTranslation";
 
 /* ================= STYLES (UNCHANGED) ================= */
@@ -85,10 +86,9 @@ const Home = ({ isOpen, isMobile = false, sidebarWidth = 0, toggle }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
+      await API.post(
         "/api/v1/auth/logout",
-        {},
-        { withCredentials: true }
+        {}
       );
     } catch (err) {
       console.error("Logout API error:", err);

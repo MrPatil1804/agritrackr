@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import API from '../../../../utils/api';
 import {
     Alert,
     Box,
@@ -22,7 +23,7 @@ function UserProfile() {
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const res = await axios.get('/api/v1/settings/profile', { withCredentials: true });
+            const res = await API.get('/api/v1/settings/profile');
             const { fullName = '', farmName = '', phone = '', username = '', email = '' } = res.data?.data || {};
             setProfile({ fullName, farmName, phone, username, email });
         } catch (err) {
@@ -52,10 +53,9 @@ function UserProfile() {
         }
         try {
             setSaving(true);
-            await axios.patch(
+            await API.patch(
                 '/api/v1/settings/profile',
-                { fullName: profile.fullName, farmName: profile.farmName, phone: profile.phone },
-                { withCredentials: true }
+                { fullName: profile.fullName, farmName: profile.farmName, phone: profile.phone }
             );
             showSnackbar('Profile updated successfully');
         } catch (err) {

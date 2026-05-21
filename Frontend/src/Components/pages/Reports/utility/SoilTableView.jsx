@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import API from '../../../../utils/api';
 import { Box, Button, Switch, Typography } from "@mui/material";
 import {
   CTable,
@@ -69,7 +70,7 @@ export default function SoilTableView({ dates }) {
         params.type = type;
         params.mode = mode;
         params.limit = 500; // Increase limit to get all data in date range
-        const res = await axios.get("/api/v1/soil/table", {
+        const res = await API.get("/api/v1/soil/table", {
           params,
           signal: controller.signal,
         });
@@ -90,14 +91,14 @@ export default function SoilTableView({ dates }) {
         if (dates && dates[1]) soilParams.end = dates[1];
         soilParams.limit = 500; // Increase limit to get all data in date range
         // Note: NOT passing type parameter here - we need ALL nutrients for status calculation
-        const soilRes = await axios.get("/api/v1/soil/data", {
+        const soilRes = await API.get("/api/v1/soil/data", {
           params: soilParams,
           signal: controller.signal,
         });
         const soilData = soilRes.data?.data || [];
 
         // Fetch ideal values
-        const idealsRes = await axios.get("/api/v1/soil/ideals", {
+        const idealsRes = await API.get("/api/v1/soil/ideals", {
           signal: controller.signal,
         });
         const idealsData = idealsRes.data?.data || {};

@@ -5,6 +5,7 @@ import Datepicker from "../../DateTimePicker/DatePicker";
 import styled from "styled-components";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell, PieChart, Pie, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
+import API from '../../../utils/api';
 import { useSelector } from 'react-redux';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -121,12 +122,8 @@ function MiniDashboard({ isOpen, toggle, isVisi = true }) {
         params.append('limit', '500');
 
         const [dataRes, idealsRes] = await Promise.all([
-          axios.get(`/api/v1/soil/data?${params.toString()}`, {
-            withCredentials: true,
-          }),
-          axios.get('/api/v1/soil/ideals', {
-            withCredentials: true,
-          })
+          API.get(`/api/v1/soil/data?${params.toString()}`),
+          API.get('/api/v1/soil/ideals')
         ]);
         setSoilData(dataRes.data.data || dataRes.data?.data || []);
 

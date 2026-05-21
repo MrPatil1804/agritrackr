@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Col, Container, Form, Row, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API from '../../../utils/api';
 import { Box } from '@mui/material';
 import { TbMailFilled } from "react-icons/tb";
 import { FaUser } from "react-icons/fa";
@@ -120,7 +121,7 @@ export default function Register() {
         ...(teamMembersFiltered.length > 0 ? { teamMembers: teamMembersFiltered } : {})
       };
 
-      await axios.post(`/api/v1/auth/register`, payload, {
+      await API.post(`/api/v1/auth/register`, payload, {
         headers: {
           'Content-Type': 'application/json'
         }
